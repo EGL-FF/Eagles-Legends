@@ -1,33 +1,37 @@
-# Eagles Legends
+# Eagles Legends — sitio web
 
-Sitio web oficial de presentación para la comunidad Eagles Legends.
+Sitio estático responsive en español. No requiere framework ni servidor propio; puede publicarse en GitHub Pages, Netlify, Vercel o cualquier hosting estático.
 
-## Contenido
+## Personalización rápida
 
-- Presentación de la comunidad competitiva de Free Fire.
-- Scrims, torneos y entrenamiento.
-- Información de Eagles Legends Rich Presence para Discord.
-- Roles y principios de trabajo en equipo.
-- Enlaces a la documentación legal existente.
+Edita `site-config.js`:
 
-## Publicar con GitHub Pages
+- `discordInvite`: invitación real del servidor.
+- `applicationEmail`: correo público de reclutamiento/contacto. El formulario abre el cliente de correo del visitante (no envía directamente ni necesita backend).
+- `instagram`, `tiktok`, `youtube`: enlaces completos de redes.
+- `foundedYear`: año que aparece en la portada.
+- `formEndpoint`: (opcional) URL de Formspree/Getform; el formulario envía directo sin abrir el correo.
+- `rosterOfficial`: pon `true` cuando el roster sea el oficial.
+- `events`: calendario de torneos/scrims (fecha `AAAA-MM-DD`). Vacío = muestra "Próximamente".
+- `ranking`: tabla de puntos EL (nombre, puntos, kills). Vacío = muestra "Próximamente".
+- `roster`: roles, nombres y descripciones que muestra la sección de roster. Sustituye los ejemplos por información oficial.
 
-1. Abre **Settings** en este repositorio.
-2. Entra en **Pages**.
-3. En **Build and deployment**, elige **Deploy from a branch**.
-4. Selecciona la rama **main** y la carpeta **/ (root)**.
-5. Guarda los cambios.
+No coloques tokens de Discord, claves privadas ni credenciales en archivos públicos del sitio.
 
-Cuando GitHub Pages termine de publicar, la web estará disponible en:
+## Probar localmente
 
-https://justin-antonio-martinez-hernandez.github.io/Eagles-Legends/
+Abre `index.html` en el navegador. Para una prueba local más fiel, sirve la carpeta con cualquier servidor estático, por ejemplo `npx serve .` desde esta carpeta.
 
-## Personalización pendiente
+## Publicar
 
-Antes de compartir la web como página definitiva, puedes agregar los enlaces oficiales de Discord y redes sociales, nombres del roster, logros verificados y datos de contacto. No se añadieron nombres, resultados ni enlaces sociales ficticios.
+Sube el contenido completo de esta carpeta a un hosting estático. El archivo de entrada es `index.html`.
 
-## Documentación legal
+## Nota del formulario
 
-La web enlaza a los documentos del repositorio [eagles-legends-legal](https://github.com/Justin-Antonio-Martinez-Hernandez/eagles-legends-legal).
+El formulario funciona con `mailto:` cuando `applicationEmail` está configurado. Para recibir solicitudes sin depender del correo instalado en el navegador, conecta un backend o un servicio de formularios antes de publicarlo.
 
-Eagles Legends es una comunidad independiente y no está afiliada, patrocinada ni respaldada oficialmente por Garena ni Discord Inc.
+## GitHub Pages
+
+El workflow `.github/workflows/pages.yml` publica el sitio al hacer push a `main`. Activa en el repo: Settings → Pages → Source: **GitHub Actions**.
+
+No inventes datos: deja `events` y `ranking` vacíos hasta tener información oficial.
