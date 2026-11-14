@@ -18,6 +18,8 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="preloader" aria-hidden="true"><img src="assets/eagle-crest.png" alt=""><i></i></div>
+  <div class="progress" aria-hidden="true"></div><div class="cursor-glow" aria-hidden="true"></div>
   <div class="noise" aria-hidden="true"></div>
   <header class="site-header" id="inicio">
     <a class="brand" href="#inicio" aria-label="Eagles Legends, inicio">
@@ -28,6 +30,7 @@
     <nav class="main-nav" aria-label="Navegación principal">
       <a href="#nosotros">Nosotros</a>
       <a href="#competencia">Competencia</a>
+      <a href="#sistema">Sistema EL</a>
       <a href="#roster">Roster</a>
       <a href="#calendario">Calendario</a>
       <a href="#ranking">Ranking</a>
@@ -64,6 +67,13 @@
 
     <section class="ticker" aria-label="Lema del equipo"><div class="ticker-track"><span>DISCIPLINA</span><b>✦</b><span>ESTRATEGIA</span><b>✦</b><span>LEALTAD</span><b>✦</b><span>COMPETENCIA</span><b>✦</b><span>DISCIPLINA</span><b>✦</b><span>ESTRATEGIA</span><b>✦</b><span>LEALTAD</span><b>✦</b><span>COMPETENCIA</span><b>✦</b></div></section>
 
+    <section class="stats" aria-label="El ecosistema en cifras"><div class="stats-grid">
+      <div class="stat"><b data-count="2">0</b><span>BOTS DE DISCORD<br>PROPIOS</span></div>
+      <div class="stat"><b data-count="30">0</b><span>MODOS MULTIJUGADOR<br>EN DESARROLLO</span></div>
+      <div class="stat"><b data-count="25">0</b><span>PUNTOS EL<br>POR UN TOP 1</span></div>
+      <div class="stat"><b data-count="4">0</b><span>VS 4 · DUELOS<br>DE ESCUADRA</span></div>
+    </div></section>
+
     <section class="section section-about" id="nosotros">
       <div class="section-kicker reveal"><span>01 / QUIÉNES SOMOS</span><i></i><span>IDENTIDAD</span></div>
       <div class="about-layout">
@@ -82,6 +92,18 @@
         <article class="comp-card reveal"><div class="comp-number">03</div><div class="comp-icon">◈</div><div class="comp-card-bottom"><span>03 — MEJORAR</span><h3>ENTRENAMIENTOS</h3><p>Rutinas, roles y revisión para seguir evolucionando.</p><a href="#contacto" aria-label="Consultar sobre entrenamientos">↗</a></div><div class="card-watermark">03</div></article>
         <article class="comp-card reveal"><div class="comp-number">04</div><div class="comp-icon">⌖</div><div class="comp-card-bottom"><span>04 — SUPERARSE</span><h3>DUELOS PvP</h3><p>Retos individuales y de escuadra para poner a prueba el nivel.</p><a href="#contacto" aria-label="Consultar sobre duelos PvP">↗</a></div><div class="card-watermark">04</div></article>
       </div>
+    </section>
+
+    <section class="section section-system" id="sistema">
+      <div class="section-kicker reveal"><span>03 / ECOSISTEMA</span><i></i><span>SISTEMA EL</span></div>
+      <div class="section-heading reveal"><div><p class="mini-label">ECONOMÍA · PvP · RESULTADOS</p><h2>COMPETIR AQUÍ<br><span>SE NOTA.</span></h2></div><p>Una economía virtual propia dentro de Discord. Las monedas EL no son dinero real.</p></div>
+      <div class="bento">
+        <article class="bento-card b-wide tilt reveal"><span class="tag">ECONOMÍA EL</span><h3>MONEDAS EL</h3><p>Consulta tu saldo, gana monedas por resultados, compra en la tienda interna, transfiere y compite en el ranking.</p><div class="chips"><i>SALDO</i><i>TIENDA</i><i>TRANSFERENCIAS</i><i>RANKING</i></div></article>
+        <article class="bento-card tilt reveal"><span class="tag">PvP · 1v1</span><h3>DUELO INDIVIDUAL</h3><p><b>Amistoso:</b> sin monedas y sin aceptación. <b>Por puntos EL:</b> el rival acepta, ambos aportan y el ganador se lleva el premio.</p></article>
+        <article class="bento-card tilt reveal"><span class="tag">PvP · 4v4</span><h3>DUELO DE ESCUADRAS</h3><p>Dos equipos de cuatro, aportes de monedas EL, recompensa para el ganador y disputas resueltas por el staff.</p></article>
+        <article class="bento-card b-wide tilt reveal"><span class="tag">DOS BOTS · DOS ECONOMÍAS</span><h3>LEGENDS BOT &amp; EAGLE FUN</h3><p><b>Eagles Legends Bot</b> gestiona torneos, scrims, entrenamientos, perfiles y rankings. <b>Eagle Fun</b> pone el entretenimiento: minijuegos, trivia y retos. Sus puntos están completamente separados de las monedas EL.</p></article>
+      </div>
+      <div class="points reveal"><div class="points-head"><div><p class="mini-label">COMANDO /RESULTADO</p><h3>TABLA DE PUNTOS EL</h3></div><p class="kill-bonus"><b>+2</b> PUNTOS EL<br>POR CADA BAJA</p></div><div class="points-grid"><div class="pt gold"><span>TOP 1</span><b>25</b></div><div class="pt"><span>TOP 2</span><b>18</b></div><div class="pt"><span>TOP 3</span><b>15</b></div><div class="pt"><span>TOP 4</span><b>12</b></div><div class="pt"><span>TOP 5</span><b>10</b></div><div class="pt"><span>TOP 6</span><b>8</b></div><div class="pt"><span>TOP 7</span><b>6</b></div><div class="pt"><span>TOP 8</span><b>5</b></div><div class="pt"><span>TOP 9</span><b>4</b></div><div class="pt"><span>TOP 10</span><b>3</b></div><div class="pt"><span>TOP 11</span><b>2</b></div><div class="pt"><span>TOP 12</span><b>1</b></div><div class="pt"><span>TOP 13</span><b>1</b></div></div></div>
     </section>
 
     <section class="section section-roster" id="roster">
@@ -106,6 +128,16 @@
       <div class="section-kicker reveal"><span>05 / CLASIFICACIÓN</span><i></i><span>RANKING EL</span></div>
       <div class="section-heading reveal"><div><p class="mini-label">PUNTOS EL</p><h2>LOS QUE<br><span>MÁS SUMAN.</span></h2></div><p>Clasificación de la comunidad según resultados y kills registrados.</p></div>
       <div class="rank-wrap reveal"><table class="rank-table"><thead><tr><th>#</th><th>JUGADOR</th><th>PUNTOS EL</th><th>KILLS</th></tr></thead><tbody id="rank-body"></tbody></table></div>
+    </section>
+
+    <section class="section section-faq" id="faq">
+      <div class="section-kicker reveal"><span>PREGUNTAS</span><i></i><span>FAQ</span></div>
+      <div class="faq-list reveal">
+        <details><summary>¿Qué son las monedas EL?</summary><p>Es la economía virtual interna del servidor de Discord de Eagles Legends. No es dinero real.</p></details>
+        <details><summary>¿Los puntos de Eagle Fun valen como monedas EL?</summary><p>No. Los puntos de actividad de Eagle Fun son una economía independiente de las monedas EL.</p></details>
+        <details><summary>¿Cuántos puntos da cada baja?</summary><p>Cada baja suma 2 puntos EL adicionales a los de tu posición final.</p></details>
+        <details><summary>¿Cómo me uno al equipo?</summary><p>Entra al Discord o envía el formulario de contacto de esta página contando quién eres y qué aportas a la escuadra.</p></details>
+      </div>
     </section>
 
     <section class="join-banner" id="reclutamiento">
@@ -133,5 +165,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="site-config.js"></script>
   <script src="app.js"></script>
+  <script src="fx.js"></script>
 </body>
 </html>
