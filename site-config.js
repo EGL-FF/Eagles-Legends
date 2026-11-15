@@ -6,11 +6,11 @@ window.EAGLES_CONFIG = {
     { name: "Discord", handle: "Únete al servidor", url: "https://discord.gg/VqrrqckTxm" }
   ],
   roster: [
-    { nick: "EGL.Tide",photo:"assets/tide.png", roles: ["Granadero", "IGL", "Soporte"] },
-    { nick: "EGL.Felipe",photo:"assets/felipe.png", roles: ["Rusher L1", "Rusher L2"] },
-    { nick: "EGL.MihaWK",photo:"assets/mihawk.png", roles: ["IGL", "Rusher", "Soporte"] },
-    { nick: "EGL.Hyumen",photo:"assets/hyumen.png", roles: ["Rusher L1"] },
-    { nick: "EGL.Betex",photo:"assets/betex.png", roles: ["Rusher L2", "Curandero", "Soporte"] },
+    { nick: "EGL.Tide", roles: ["Granadero", "IGL", "Soporte"] },
+    { nick: "EGL.Felipe", roles: ["Rusher L1", "Rusher L2"] },
+    { nick: "EGL.MihaWK", roles: ["IGL", "Rusher", "Soporte"] },
+    { nick: "EGL.Hyumen", roles: ["Rusher L1"] },
+    { nick: "EGL.Betex", roles: ["Rusher L2", "Curandero", "Soporte"] },
     { nick: "", roles: [] } // cupo vacante
   ],
   // Ejemplo: { date: "2026-12-05", time: "20:00", type: "SCRIM", title: "Scrim semanal", detail: "Discord" }
