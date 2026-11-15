@@ -2,10 +2,11 @@
   const C = window.EAGLES_CONFIG || {}, $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ok = u => /^https:\/\//.test(u || '');
+  const img = u => /^(assets\/[\w\-./]+|https:\/\/\S+)$/.test(u || '');
   $$('[data-discord]').forEach(a => { if (ok(C.discordInvite)) a.href = C.discordInvite; });
   $('#social-links').innerHTML = (C.socials || []).filter(s => ok(s.url)).map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"><b>${esc(s.name)}</b><span>${esc(s.handle)}</span><i>↗</i></a>`).join('');
   $('#roster-grid').innerHTML = (C.roster || []).map((p, i) => p.nick
-    ? `<article class="player"><span class="num">0${i + 1}</span><div class="pname">${esc(p.nick)}</div><div class="roles">${p.roles.map(r => `<i>${esc(r)}</i>`).join('')}</div></article>`
+    ? `<article class="player${img(p.photo) ? ' has-photo' : ''}">${img(p.photo) ? `<img class="pimg" src="${esc(p.photo)}" alt="" loading="lazy">` : ''}<span class="num">0${i + 1}</span><div class="pname">${esc(p.nick)}</div><div class="roles">${p.roles.map(r => `<i>${esc(r)}</i>`).join('')}</div></article>`
     : `<a class="player open" href="${ok(C.discordInvite) ? esc(C.discordInvite) : '#unete'}" target="_blank" rel="noopener noreferrer"><span class="num">0${i + 1}</span><div class="pname">VACANTE</div><div class="roles"><i>Cupo abierto</i></div><em>POSTÚLATE ↗</em></a>`).join('');
   const ev = (C.events || []).filter(e => e && e.title && !isNaN(new Date(e.date + 'T00:00:00'))).sort((a, b) => a.date.localeCompare(b.date));
   const fmt = e => { const d = new Date(e.date + 'T00:00:00'); return [String(d.getDate()).padStart(2, '0'), d.toLocaleDateString('es-MX', { month: 'short' }).replace('.', '').toUpperCase()]; };
@@ -13,6 +14,9 @@
   const nx = $('#next-match'); if (nx && ev[0]) { const [d, m] = fmt(ev[0]); nx.innerHTML = `<small>PRÓXIMA ACTIVIDAD</small><h3>${esc(ev[0].title)}</h3><p>${d} ${esc(m)}${ev[0].time ? ' · ' + esc(ev[0].time) : ''} · ${esc(ev[0].type || '')}</p>`; }
   const rk = (C.ranking || []).filter(r => r && r.name).sort((a, b) => (b.points || 0) - (a.points || 0)).slice(0, 10);
   $('#rank-body').innerHTML = rk.length ? rk.map((r, i) => `<tr><td>${String(i + 1).padStart(2, '0')}</td><td>${esc(r.name)}</td><td>${+r.points || 0}</td><td>${+r.kills || 0}</td></tr>`).join('') : '<tr><td colspan="4" class="empty">EL RANKING SE PUBLICA CON LOS RESULTADOS OFICIALES.</td></tr>';
+  const rs = (C.results || []).filter(r => r && r.opponent), w = rs.filter(r => r.win).length;
+  $('#res-sum').innerHTML = rs.length ? `<div><b>${rs.length}</b>JUGADAS</div><div><b>${w}</b>VICTORIAS</div><div><b>${rs.length - w}</b>DERROTAS</div>` : '';
+  $('#res-list').innerHTML = rs.length ? rs.map(r => `<div class="res ${r.win ? 'w' : 'l'}"><em>${r.win ? 'VICTORIA' : 'DERROTA'}</em><h4><small>VS</small> ${esc(r.opponent)}</h4><b>${esc(r.score || '')}</b></div>`).join('') : '<p class="empty">AÚN NO HAY RESULTADOS REGISTRADOS.</p>';
   $('#year').textContent = new Date().getFullYear();
   const t = $('.nav-toggle'), n = $('.main-nav');
   t.addEventListener('click', () => { const o = n.classList.toggle('open'); t.setAttribute('aria-expanded', o); });

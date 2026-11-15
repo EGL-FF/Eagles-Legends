@@ -8,7 +8,7 @@ Edita `site-config.js`:
 
 - `discordInvite`: invitación real del servidor.
 - `socials`: redes (nombre, usuario visible y URL `https://`).
-- `roster`: jugadores con `nick` y `roles`; un objeto con `nick: ""` muestra el cupo vacante.
+- `roster`: jugadores con `nick`, `roles` y `photo` opcional (ej. `"assets/tide.png"`, PNG vertical sin fondo, ~600×800 px); un objeto con `nick: ""` muestra el cupo vacante.
 - `events`: calendario de torneos/scrims (fecha `AAAA-MM-DD`). Vacío = "Sin actividades programadas".
 - `ranking`: tabla de puntos EL (nombre, puntos, kills). Vacío = mensaje de ranking pendiente.
 
