@@ -39,3 +39,4 @@ window.EAGLES_CONFIG = {
     { name: "EGL.Hyumen", points: 255, kills: 56 }
   ]
 };
+  // Ejemplo: { name: "EGL.Nick", points: 120, kills: 45 }
