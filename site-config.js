@@ -32,14 +32,16 @@ window.EAGLES_CONFIG = {
   ],
   // Info del torneo: solo se ve en /#agendainfo. Lo vacío muestra "POR CONFIRMAR".
   tourney: {
-    name: "",
-    mode: "",                 // texto: cómo se juega
-    maps: [],                 // ["Bermuda", "Purgatorio"]
-    ranking: [],              // ["Top 1: 12 pts", "1 baja: 1 pt"]
+    name: "PRUEBA EAGLE LEGEND 1",
+    mode: "Solo (individual).",
+    // Mapas: texto o con imagen, ej. { name: "Bermuda", image: "assets/maps/bermuda.jpg" }
+    maps: ["Bermuda", "Kalahari", "Purgatorio", "Solara"],
+    ranking: ["Se puntúa por posición y por bajas."],
     weaponsAllowed: [],
     weaponsBanned: [],
-    rules: []                 // ["Prohibido usar emuladores", ...]
+    rules: ["Prohibido jugar desde PC.", "Prohibido usar hacks.", "Respeto hacia todos los participantes."]
   },
+
   // Ejemplo: { name: "EGL.Nick", points: 120, kills: 45 }
   ranking: [
     { name: "EGL.Felipe", points: 828, kills: 147 },
