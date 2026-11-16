@@ -30,6 +30,16 @@ window.EAGLES_CONFIG = {
     { opponent: "BNLECHITOS", win: false },
     { opponent: "BTS.67777777", win: true }
   ],
+  // Info del torneo: solo se ve en /#agendainfo. Lo vacío muestra "POR CONFIRMAR".
+  tourney: {
+    name: "",
+    mode: "",                 // texto: cómo se juega
+    maps: [],                 // ["Bermuda", "Purgatorio"]
+    ranking: [],              // ["Top 1: 12 pts", "1 baja: 1 pt"]
+    weaponsAllowed: [],
+    weaponsBanned: [],
+    rules: []                 // ["Prohibido usar emuladores", ...]
+  },
   // Ejemplo: { name: "EGL.Nick", points: 120, kills: 45 }
   ranking: [
     { name: "EGL.Felipe", points: 828, kills: 147 },

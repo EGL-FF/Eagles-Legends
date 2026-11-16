@@ -10,6 +10,7 @@ Edita `site-config.js`:
 - `socials`: redes (nombre, usuario visible y URL `https://`).
 - `roster`: jugadores con `nick`, `roles` y `photo` opcional (ej. `"assets/tide.png"`, PNG vertical sin fondo, ~600×800 px); un objeto con `nick: ""` muestra el cupo vacante.
 - `events`: calendario de torneos/scrims (fecha `AAAA-MM-DD`). Vacío = "Sin actividades programadas".
+- `tourney`: info del torneo (modalidad, mapas, puntos, armas, reglas). Solo se ve en `…/#agendainfo`; no está en el menú.
 - `ranking`: tabla de puntos EL (nombre, puntos, kills). Vacío = mensaje de ranking pendiente.
 
 No coloques tokens de Discord, claves privadas ni credenciales en archivos públicos del sitio.

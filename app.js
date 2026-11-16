@@ -23,6 +23,13 @@
   const rv = {}; rs.forEach(r => { const o = rv[r.opponent] = rv[r.opponent] || [0, 0]; o[r.win ? 0 : 1]++; });
   $('#res-riv').innerHTML = Object.entries(rv).map(([n, [a, b]]) => `<span><b>${esc(n)}</b>${a}V · ${b}D</span>`).join('');
   $('#res-list').innerHTML = rs.length ? rs.map(r => `<div class="res ${r.win ? 'w' : 'l'}"><em>${r.win ? 'VICTORIA' : 'DERROTA'}</em><h4><small>VS</small> ${esc(r.opponent)}</h4><b>${esc(r.score || '')}</b></div>`).join('') : '<p class="empty">AÚN NO HAY RESULTADOS REGISTRADOS.</p>';
+  const T = C.tourney || {}, tbd = '<span class="tbd">POR CONFIRMAR EN EL DISCORD</span>';
+  const chips = (a, c) => (a || []).length ? `<div class="chips ${c}">${a.map(x => `<span>${esc(x)}</span>`).join('')}</div>` : tbd;
+  const list = a => (a || []).length ? `<ul>${a.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : tbd;
+  $('#t-name').textContent = T.name || '';
+  $('#t-grid').innerHTML = [['MODALIDAD', T.mode ? `<p>${esc(T.mode)}</p>` : tbd], ['MAPAS', chips(T.maps, '')], ['PUNTOS Y RANKING', list(T.ranking)], ['ARMAS PERMITIDAS', chips(T.weaponsAllowed, 'ok')], ['ARMAS PROHIBIDAS', chips(T.weaponsBanned, 'no')], ['REGLAS', list(T.rules), 'wide']].map(([h, b, w]) => `<div class="tbox ${w || ''}"><h3>${h}</h3>${b}</div>`).join('');
+  const gate = () => { const s = $('#agendainfo'), on = location.hash === '#agendainfo'; s.hidden = !on; if (on) requestAnimationFrame(() => s.scrollIntoView()); };
+  gate(); addEventListener('hashchange', gate);
   $('#year').textContent = new Date().getFullYear();
   const t = $('.nav-toggle'), n = $('.main-nav');
   t.addEventListener('click', () => { const o = n.classList.toggle('open'); t.setAttribute('aria-expanded', o); });
