@@ -7,14 +7,14 @@ window.EAGLES_CONFIG = {
   ],
   roster: [
     { nick: "EGL.Tide", roles: ["Granadero", "IGL", "Soporte"] },
-    { nick: "EGL.Felipe", roles: ["Rusher L1", "Rusher L2"] },
     { nick: "EGL.MihaWK", roles: ["IGL", "Rusher", "Soporte"] },
-    { nick: "EGL.Hyumen", roles: ["Rusher L1"] },
-    { nick: "EGL.Betex", roles: ["Rusher L2", "Curandero", "Soporte"] },
-    { nick: "", roles: [] } // cupo vacante
+    { nick: "EGL.Felipe", roles: ["Rusher L1", "Rusher L2"] },
+    { nick: "EGL.Betex", roles: ["Rusher L2", "Curandero", "Soporte"] }
   ],
   // Ejemplo: { date: "2026-12-05", time: "20:00", type: "SCRIM", title: "Scrim semanal", detail: "Discord" }
-  events: [],
+  events: [
+    { date: "2026-11-18", time: "7:00 PM", type: "TRYOUTS", title: "Pruebas Eagles Legends", detail: "Inscripciones abiertas, hasta 45 inscritos. Inscríbete en el Discord." }
+  ],
   // Resultados: win true/false; score es opcional, tal como se juega (ej. "8-2")
   results: [
     { opponent: "VORNAK CLAN", win: true, score: "8-2" },
@@ -39,4 +39,3 @@ window.EAGLES_CONFIG = {
     { name: "EGL.Hyumen", points: 255, kills: 56 }
   ]
 };
-  // Ejemplo: { name: "EGL.Nick", points: 120, kills: 45 }
