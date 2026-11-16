@@ -35,7 +35,7 @@ window.EAGLES_CONFIG = {
     name: "PRUEBA EAGLE LEGEND 1",
     mode: "Solo (individual).",
     // Mapas: texto o con imagen, ej. { name: "Bermuda", image: "assets/maps/bermuda.jpg" }
-    maps: ["Bermuda", "Kalahari", "Purgatorio", "Solara"],
+    maps: [{"Bermuda", image = "assets/maps/bermuda.jpg"} , "Kalahari", "Purgatorio", "Solara"],
     ranking: ["Se puntúa por posición y por bajas."],
     weaponsAllowed: [],
     weaponsBanned: [],
