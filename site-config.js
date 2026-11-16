@@ -37,9 +37,9 @@ window.EAGLES_CONFIG = {
     // Mapas: texto o con imagen, ej. { name: "Bermuda", image: "assets/maps/bermuda.jpg" }
     maps: [
       { name: "Bermuda", image: "assets/maps/bermuda.jpg" },
-      "Kalahari",
-      "Purgatorio",
-      "Solara"
+      { name: "Kalahari", image: "assets/maps/kalahari.jpg" },
+      { name: "Purgatorio", image: "assets/maps/purgatorio.jpg" },
+      { name:  "Solara" , image: "assets/maps/solara.jpg" }
     ],
     ranking: ["Se puntúa por posición y por bajas."],
     weaponsAllowed: [],
