@@ -6,14 +6,15 @@ window.EAGLES_CONFIG = {
     { name: "Discord", handle: "Únete al servidor", url: "https://discord.gg/VqrrqckTxm" }
   ],
   roster: [
-    { nick: "EGL.Tide", roles: ["Granadero", "IGL", "Soporte"] },
+    { nick: "EGL.Tide", roles: ["Granadero", "IGL", "Soporte"], photo: "assets/tide.png" },
     { nick: "EGL.MihaWK", roles: ["IGL", "Rusher", "Soporte"] },
-    { nick: "EGL.Felipe", roles: ["Rusher L1", "Rusher L2"] },
+    { nick: "EGL.Felipe", roles: ["Rusher L1", "Rusher L2"], photo: "assets/felipe.png" },
     { nick: "EGL.Betex", roles: ["Rusher L2", "Curandero", "Soporte"] }
   ],
   // Ejemplo: { date: "2026-12-05", time: "20:00", type: "SCRIM", title: "Scrim semanal", detail: "Discord" }
+  // info: true muestra el botón "VER REGLAS" (abre /#agendainfo). Sin time no hay cuenta regresiva.
   events: [
-    { date: "2026-11-23", type: "TRYOUTS", title: "Pruebas Eagles Legends", signup: true, detail: "Hora por confirmar en el Discord. Inscripciones abiertas, hasta 45 inscritos. Inscríbete en el Discord." }
+    { date: "2026-11-23", type: "TRYOUTS", title: "Pruebas Eagles Legends", signup: true, info: true, detail: "Hora por confirmar en el Discord. Inscripciones abiertas, hasta 45 inscritos. Inscríbete en el Discord." }
   ],
   // Resultados: win true/false; score es opcional, tal como se juega (ej. "8-2")
   results: [
