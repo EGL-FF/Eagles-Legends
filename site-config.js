@@ -2,7 +2,7 @@
 window.EAGLES_CONFIG = {
   discordInvite: "https://discord.gg/VqrrqckTxm",
   socials: [
-    { name: "Instagram", handle: "@eagles_legends.gg", url: "https://www.instagram.com/eagles_legends.gg" },
+    { name: "Instagram", handle: "@eagleslegendsff", url: "https://www.instagram.com/eagleslegendsff" },
     { name: "Discord", handle: "Únete al servidor", url: "https://discord.gg/VqrrqckTxm" }
   ],
   roster: [
@@ -13,7 +13,7 @@ window.EAGLES_CONFIG = {
   ],
   // Ejemplo: { date: "2026-12-05", time: "20:00", type: "SCRIM", title: "Scrim semanal", detail: "Discord" }
   events: [
-    { date: "2026-11-18", time: "7:00 PM", type: "TRYOUTS", title: "Pruebas Eagles Legends", signup: true, detail: "Inscripciones abiertas, hasta 45 inscritos. Inscríbete en el Discord." }
+    { date: "2026-11-23", type: "TRYOUTS", title: "Pruebas Eagles Legends", signup: true, detail: "Hora por confirmar en el Discord. Inscripciones abiertas, hasta 45 inscritos. Inscríbete en el Discord." }
   ],
   // Resultados: win true/false; score es opcional, tal como se juega (ej. "8-2")
   results: [
