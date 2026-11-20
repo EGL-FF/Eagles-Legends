@@ -1,22 +1,102 @@
-// Configuración de Eagles Legends. Edita aquí; no inventes datos.
+
+// ======================================================
+// CONFIGURACIÓN DE EAGLES LEGENDS
+// ======================================================
+
 window.EAGLES_CONFIG = {
+
+  // ====================================================
+  // PORTAL WEB Y API
+  // ====================================================
+
+  // Sustituye esta dirección por la URL HTTPS que te
+  // entregue Cloudflare Tunnel al ejecutar cloudflared.
+  //
+  // Ejemplo:
+  // https://nombre-aleatorio.trycloudflare.com
+
+  apiBaseUrl: "https://TU-URL.trycloudflare.com",
+
+  // ====================================================
+  // DISCORD
+  // ====================================================
+
   discordInvite: "https://discord.gg/VqrrqckTxm",
+
+  // ====================================================
+  // REDES SOCIALES
+  // ====================================================
+
   socials: [
-    { name: "Instagram", handle: "@eagleslegendsff", url: "https://www.instagram.com/eagleslegendsff" },
-    { name: "Discord", handle: "Únete al servidor", url: "https://discord.gg/VqrrqckTxm" }
+    {
+      name: "Instagram",
+      handle: "@eagleslegendsff",
+      url: "https://www.instagram.com/eagleslegendsff"
+    },
+    {
+      name: "Discord",
+      handle: "Únete al servidor",
+      url: "https://discord.gg/VqrrqckTxm"
+    }
   ],
+
+  // ====================================================
+  // ROSTER
+  // ====================================================
+
   roster: [
-    { nick: "EGL.Tide", roles: ["Granadero", "IGL", "Soporte"], photo: "assets/tide.png" },
-    { nick: "EGL.MihaWK", roles: ["IGL", "Rusher", "Soporte"] },
-    { nick: "EGL.Felipe", roles: ["Rusher L1", "Rusher L2"], photo: "assets/felipe.png" },
-    { nick: "EGL.Betex", roles: ["Rusher L2", "Curandero", "Soporte"] }
+    {
+      nick: "EGL.Tide",
+      roles: ["Granadero", "IGL", "Soporte"],
+      photo: "assets/tide.png"
+    },
+    {
+      nick: "EGL.MihaWK",
+      roles: ["IGL", "Rusher", "Soporte"]
+    },
+    {
+      nick: "EGL.Felipe",
+      roles: ["Rusher L1", "Rusher L2"],
+      photo: "assets/felipe.png"
+    },
+    {
+      nick: "EGL.Betex",
+      roles: ["Rusher L2", "Curandero", "Soporte"]
+    }
   ],
-  // Ejemplo: { date: "2026-12-05", time: "20:00", type: "SCRIM", title: "Scrim semanal", detail: "Discord" }
-  // info: true muestra el botón "VER REGLAS" (abre /#agendainfo). Sin time no hay cuenta regresiva.
+
+  // ====================================================
+  // EVENTOS
+  // ====================================================
+
+  // Ejemplo:
+  // {
+  //   date: "2026-12-05",
+  //   time: "20:00",
+  //   type: "SCRIM",
+  //   title: "Scrim semanal",
+  //   detail: "Discord"
+  // }
+
   events: [
-    { date: "2026-11-23", type: "TRYOUTS", title: "Pruebas Eagles Legends", signup: true, info: true, detail: "Hora por confirmar en el Discord. Inscripciones abiertas, hasta 45 inscritos. Inscríbete en el Discord." }
+    {
+      date: "2026-11-23",
+      type: "TRYOUTS",
+      title: "Pruebas Eagles Legends",
+      signup: true,
+      info: true,
+      detail: "Hora por confirmar en el Discord. Inscripciones abiertas, hasta 45 inscritos. Inscríbete en el Discord."
+    }
   ],
-  // Resultados: win true/false; score es opcional, tal como se juega (ej. "8-2")
+
+  // ====================================================
+  // RESULTADOS COMPETITIVOS
+  // ====================================================
+
+  // win: true = victoria
+  // win: false = derrota
+  // score: marcador opcional
+
   results: [
     { opponent: "VORNAK CLAN", win: true, score: "8-2" },
     { opponent: "VORNAK CLAN", win: true, score: "8-7" },
@@ -31,20 +111,61 @@ window.EAGLES_CONFIG = {
     { opponent: "BNLECHITOS", win: false },
     { opponent: "BTS.67777777", win: true }
   ],
-  // Info del torneo: solo se ve en /#agendainfo. Lo vacío muestra "POR CONFIRMAR".
+
+  // ====================================================
+  // INFORMACIÓN DEL TORNEO
+  // ====================================================
+
+  // Esta información se muestra en /#agendainfo.
+  // Los campos vacíos muestran "POR CONFIRMAR".
+
   tourney: {
+
     name: "PRUEBA EAGLE LEGEND 1",
+
     mode: "Solo (individual).",
-    // Mapas: texto o con imagen, ej. { name: "Bermuda", image: "assets/maps/bermuda.jpg" }
+
+    // Mapas del torneo.
+
     maps: [
-      { name: "Bermuda", image: "assets/maps/bermuda.jpg" },
-      { name: "Kalahari", image: "assets/maps/kalahari.jpg" },
-      { name: "Purgatorio", image: "assets/maps/purgatorio.jpg" },
-      { name: "Solara", image: "assets/maps/solara.jpg" }
+      {
+        name: "Bermuda",
+        image: "assets/maps/bermuda.jpg"
+      },
+      {
+        name: "Kalahari",
+        image: "assets/maps/kalahari.jpg"
+      },
+      {
+        name: "Purgatorio",
+        image: "assets/maps/purgatorio.jpg"
+      },
+      {
+        name: "Solara",
+        image: "assets/maps/solara.jpg"
+      }
     ],
-    ranking: ["Se puntúa por posición y por bajas."],
-    weaponsAllowed: ["Todas, sin excepción"],
-    weaponsBanned: ["Ninguna"],
+
+    // Sistema de puntuación.
+
+    ranking: [
+      "Se puntúa por posición y por bajas."
+    ],
+
+    // Armas permitidas.
+
+    weaponsAllowed: [
+      "Todas, sin excepción"
+    ],
+
+    // Armas prohibidas.
+
+    weaponsBanned: [
+      "Ninguna"
+    ],
+
+    // Reglas.
+
     rules: [
       "Las pruebas se realizarán en modalidad SOLO.",
       "Todas las armas están permitidas, sin excepción.",
@@ -58,6 +179,9 @@ window.EAGLES_CONFIG = {
       "El jugador deberá demostrar su verdadero nivel y jugar con seriedad.",
       "Prohibido jugar desde PC."
     ],
+
+    // Aspectos que serán evaluados.
+
     evaluate: [
       "Dominio de su rol.",
       "Precisión y control de armas.",
@@ -67,6 +191,9 @@ window.EAGLES_CONFIG = {
       "Adaptación a diferentes situaciones.",
       "Actitud y disciplina."
     ],
+
+    // Motivos de descalificación.
+
     disqualify: [
       "Utilizar trampas o programas externos.",
       "Abandonar la prueba sin autorización.",
@@ -74,16 +201,52 @@ window.EAGLES_CONFIG = {
       "Comportamiento irrespetuoso.",
       "No respetar las reglas establecidas."
     ],
+
+    // Información adicional.
+
     note: "En EAGLES LEGENDS no buscamos solamente jugadores con buenas estadísticas o muchas kills. Buscamos jugadores que sepan desempeñar su rol, tengan habilidad, estrategia, disciplina y sepan demostrar su potencial.",
-    slogan: ["¡DEMUESTRA DE QUÉ ESTÁS HECHO!", "EAGLES LEGENDS — JUNTOS MÁS FUERTES."]
+
+    // Lema.
+
+    slogan: [
+      "¡DEMUESTRA DE QUÉ ESTÁS HECHO!",
+      "EAGLES LEGENDS — JUNTOS MÁS FUERTES."
+    ]
   },
 
-  // Ejemplo: { name: "EGL.Nick", points: 120, kills: 45 }
+  // ====================================================
+  // RANKING COMPETITIVO
+  // ====================================================
+
+  // Este ranking es informativo y manual.
+  // No es todavía el ranking dinámico de la API.
+
   ranking: [
-    { name: "EGL.Felipe", points: 828, kills: 147 },
-    { name: "EGL.Tide", points: 796, kills: 116 },
-    { name: "EGL.Betex", points: 680, kills: 108 },
-    { name: "EGL.MihaWK", points: 377, kills: 61 },
-    { name: "EGL.Hyumen", points: 255, kills: 56 }
+    {
+      name: "EGL.Felipe",
+      points: 828,
+      kills: 147
+    },
+    {
+      name: "EGL.Tide",
+      points: 796,
+      kills: 116
+    },
+    {
+      name: "EGL.Betex",
+      points: 680,
+      kills: 108
+    },
+    {
+      name: "EGL.MihaWK",
+      points: 377,
+      kills: 61
+    },
+    {
+      name: "EGL.Hyumen",
+      points: 255,
+      kills: 56
+    }
   ]
+
 };
