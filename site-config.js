@@ -15,7 +15,7 @@ window.EAGLES_CONFIG = {
   // Ejemplo:
   // https://nombre-aleatorio.trycloudflare.com
 
-  apiBaseUrl: "https://surely-fashion-minimize-annie.trycloudflare.com",
+  apiBaseUrl: "https://api.el-abismo-noticias.me",
 
   // ====================================================
   // DISCORD
