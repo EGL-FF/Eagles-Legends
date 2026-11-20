@@ -25,13 +25,70 @@
     /^https:\/\/[a-z0-9.-]+(?::\d+)?$/i.test(API_BASE) &&
     !/TU-URL|example\.com/i.test(API_BASE);
 
+  const API_UNAVAILABLE_MESSAGE =
+    'La tienda de Eagles Legends no está disponible en este momento. Inténtalo más tarde.';
+
   let sessionToken = null;
   let portalLoading = false;
-  let portalMessage = '';
 
   function apiUrl(path) {
     return API_BASE + (path.startsWith('/') ? path : `/${path}`);
   }
+
+  function unavailableError() {
+    const error = new Error(API_UNAVAILABLE_MESSAGE);
+    error.code = 'API_UNAVAILABLE';
+    return error;
+  }
+
+  function isApiUnavailable(error) {
+    return error?.code === 'API_UNAVAILABLE';
+  }
+
+  // ======================================================
+  // COMPROBAR DISPONIBILIDAD DE LA API
+  // ======================================================
+
+  async function checkApiHealth() {
+    if (!API_CONFIGURED) {
+      throw new Error('La API no está configurada.');
+    }
+
+    let response;
+
+    try {
+      response = await fetch(apiUrl('/health'), {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json'
+        },
+        cache: 'no-store',
+        credentials: 'omit'
+      });
+    } catch {
+      throw unavailableError();
+    }
+
+    if (!response.ok) {
+      throw unavailableError();
+    }
+
+    const data = await response.json().catch(() => null);
+
+    if (
+      !data ||
+      data.success !== true ||
+      data.status !== 'online'
+    ) {
+      throw unavailableError();
+    }
+
+    return true;
+  }
+
+  // ======================================================
+  // SOLICITUDES A LA API
+  // ======================================================
 
   async function apiRequest(path, options = {}) {
     if (!API_CONFIGURED) {
@@ -57,10 +114,15 @@
         credentials: 'omit'
       });
     } catch {
-      throw new Error('No se pudo conectar con Eagles Legends API. Comprueba que el bot y Cloudflare estén activos.');
+      throw unavailableError();
     }
 
     const data = await response.json().catch(() => ({}));
+
+    // Errores de servidor: API caída, Cloudflare 502, 503, 504, etc.
+    if (response.status >= 500) {
+      throw unavailableError();
+    }
 
     if (!response.ok) {
       const message =
@@ -85,6 +147,10 @@
 
     return `EL-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
+
+  // ======================================================
+  // ESTILOS DEL PORTAL
+  // ======================================================
 
   function portalStyles() {
     if ($('#el-portal-styles')) return;
@@ -337,6 +403,30 @@
         border-radius: 8px;
       }
 
+      #el-portal .el-maintenance {
+        text-align: center;
+        padding: 32px 18px;
+      }
+
+      #el-portal .el-maintenance-icon {
+        font-size: 43px;
+        margin-bottom: 15px;
+      }
+
+      #el-portal .el-maintenance-title {
+        display: block;
+        font-size: 16px;
+        letter-spacing: .6px;
+      }
+
+      #el-portal .el-maintenance .el-status {
+        margin: 18px 0;
+      }
+
+      #el-portal .el-maintenance .el-btn {
+        min-width: 175px;
+      }
+
       @media(max-width:520px) {
         #el-portal .el-balances {
           grid-template-columns: 1fr 1fr;
@@ -351,8 +441,13 @@
     document.head.appendChild(style);
   }
 
+  // ======================================================
+  // MENSAJES DEL PORTAL
+  // ======================================================
+
   function portalStatus(message, type = '') {
     const el = $('#el-portal-status');
+
     if (!el) return;
 
     el.className = `el-status ${type}`;
@@ -364,8 +459,72 @@
     return $('#el-portal-root');
   }
 
+  // ======================================================
+  // PANTALLA DE MANTENIMIENTO
+  // ======================================================
+
+  function showStoreUnavailable() {
+    const root = portalRoot();
+
+    if (!root) return;
+
+    root.innerHTML = `
+      <div class="el-panel el-maintenance">
+        <div class="el-maintenance-icon">🦅</div>
+
+        <strong class="el-maintenance-title">
+          TIENDA TEMPORALMENTE NO DISPONIBLE
+        </strong>
+
+        <p class="el-muted" style="margin:14px 0">
+          Estamos teniendo problemas de conexión con nuestros servidores.
+          La tienda volverá a estar disponible cuando se restablezca el servicio.
+        </p>
+
+        <div class="el-status error">
+          SERVICIO TEMPORALMENTE DESCONECTADO
+        </div>
+
+        <button id="el-retry" class="el-btn" type="button">
+          VOLVER A INTENTAR
+        </button>
+
+        <p class="el-muted" style="margin-top:14px">
+          Eagles Legends · Juntos más fuertes
+        </p>
+      </div>
+    `;
+
+    $('#el-retry')?.addEventListener('click', async () => {
+      const button = $('#el-retry');
+
+      if (!button || button.disabled) return;
+
+      button.disabled = true;
+      button.textContent = 'COMPROBANDO...';
+
+      try {
+        await checkApiHealth();
+
+        if (sessionToken) {
+          await loadPortalData();
+        } else {
+          showSignedOut('El servidor está disponible. Ya puedes iniciar sesión.');
+        }
+
+      } catch {
+        showStoreUnavailable();
+      }
+    });
+  }
+
+  // ======================================================
+  // INICIAR SESIÓN
+  // ======================================================
+
   function showSignedOut(message = '') {
     const root = portalRoot();
+
     if (!root) return;
 
     root.innerHTML = `
@@ -373,6 +532,7 @@
         <div class="el-account">
           <div class="el-account-info">
             <strong>PORTAL DE JUGADOR</strong>
+
             <div class="el-muted">
               Vincula tu cuenta de Discord para consultar tus monedas,
               acceder a la tienda y revisar tus pedidos.
@@ -384,7 +544,7 @@
 
         <div style="margin-top:17px">
           ${API_CONFIGURED
-            ? `<a class="el-btn primary" href="${esc(apiUrl('/auth/discord'))}">
+            ? `<a id="el-login" class="el-btn primary" href="${esc(apiUrl('/auth/discord'))}">
                  <span>VINCULAR CON DISCORD ↗</span>
                </a>`
             : `<button class="el-btn" disabled>API NO CONFIGURADA</button>
@@ -395,7 +555,33 @@
 
       <div id="el-portal-status" class="el-status" hidden></div>
     `;
+
+    // Antes de enviar al jugador a Discord,
+    // comprobar que la API se encuentre disponible.
+    const loginButton = $('#el-login', root);
+
+    loginButton?.addEventListener('click', async event => {
+      event.preventDefault();
+
+      if (loginButton.dataset.checking === '1') return;
+
+      loginButton.dataset.checking = '1';
+      loginButton.textContent = 'COMPROBANDO SERVIDOR...';
+
+      try {
+        await checkApiHealth();
+
+        window.location.assign(apiUrl('/auth/discord'));
+
+      } catch {
+        showStoreUnavailable();
+      }
+    });
   }
+
+  // ======================================================
+  // RECURSOS E IMÁGENES
+  // ======================================================
 
   function imageUrl(value) {
     if (ok(value)) return value;
@@ -420,6 +606,7 @@
 
   function formatDate(value) {
     const d = new Date(value);
+
     if (isNaN(d.getTime())) return 'Fecha no disponible';
 
     return d.toLocaleString('es-MX', {
@@ -432,6 +619,7 @@
     if (Array.isArray(data)) return data;
     if (Array.isArray(data.items)) return data.items;
     if (Array.isArray(data.data?.items)) return data.data.items;
+
     return [];
   }
 
@@ -439,11 +627,17 @@
     if (Array.isArray(data)) return data;
     if (Array.isArray(data.orders)) return data.orders;
     if (Array.isArray(data.data?.orders)) return data.data.orders;
+
     return [];
   }
 
+  // ======================================================
+  // MOSTRAR CUENTA Y TIENDA
+  // ======================================================
+
   function renderDashboard(profile, economy, items, orders) {
     const root = portalRoot();
+
     if (!root) return;
 
     const displayName =
@@ -464,7 +658,12 @@
           const description = String(item.description || 'Artículo de Eagles Legends.');
           const cost = Math.max(0, Number(item.cost ?? item.price ?? 0) || 0);
           const stock = item.stock;
-          const outOfStock = stock !== undefined && stock !== null && Number(stock) <= 0;
+
+          const outOfStock =
+            stock !== undefined &&
+            stock !== null &&
+            Number(stock) <= 0;
+
           const itemImage = imageUrl(item.imageUrl);
 
           return `
@@ -476,9 +675,12 @@
 
               <div class="el-item-content">
                 <h4>${esc(name)}</h4>
+
                 <p>${esc(description)}</p>
 
-                <strong class="el-price">${cost.toLocaleString('es-MX')} EL</strong>
+                <strong class="el-price">
+                  ${cost.toLocaleString('es-MX')} EL
+                </strong>
 
                 <div class="el-muted">
                   ${stock === undefined || stock === null
@@ -502,7 +704,8 @@
                     ${outOfStock ? 'disabled' : ''}
                   >
 
-                  <button class="el-btn primary" type="submit"
+                  <button class="el-btn primary"
+                          type="submit"
                           ${outOfStock ? 'disabled' : ''}>
                     SOLICITAR COMPRA
                   </button>
@@ -518,11 +721,16 @@
           <div class="el-order">
             <div>
               <strong>${esc(order.itemName || 'Artículo')}</strong>
+
               <small>
                 Pedido: ${esc(order.id || '—')}
                 · ${esc(formatDate(order.createdAt))}
               </small>
-              <small>${Number(order.price || 0).toLocaleString('es-MX')} EL</small>
+
+              <small>
+                ${Number(order.price || 0).toLocaleString('es-MX')} EL
+              </small>
+
               ${order.note ? `<small>${esc(order.note)}</small>` : ''}
             </div>
 
@@ -543,8 +751,12 @@
 
           <div class="el-account-info">
             <strong>${esc(displayName)}</strong>
+
             <div class="el-muted">
-              ${profile.username ? `@${esc(profile.username)}` : 'Cuenta Discord vinculada'}
+              ${profile.username
+                ? `@${esc(profile.username)}`
+                : 'Cuenta Discord vinculada'
+              }
             </div>
           </div>
 
@@ -572,10 +784,16 @@
       </div>
 
       <h4 class="el-section-title">TIENDA EAGLES LEGENDS</h4>
-      <div class="el-shop-grid">${shopHTML}</div>
+
+      <div class="el-shop-grid">
+        ${shopHTML}
+      </div>
 
       <h4 class="el-section-title">MIS PEDIDOS</h4>
-      <div class="el-orders">${orderHTML}</div>
+
+      <div class="el-orders">
+        ${orderHTML}
+      </div>
 
       <div id="el-portal-status" class="el-status" hidden></div>
     `;
@@ -590,16 +808,23 @@
     });
   }
 
+  // ======================================================
+  // CARGAR DATOS DEL PORTAL
+  // ======================================================
+
   async function loadPortalData(message = '') {
     if (!sessionToken || portalLoading) return;
 
     portalLoading = true;
 
     const root = portalRoot();
+
     if (root) {
       root.innerHTML = `
         <div class="el-panel">
-          <p class="el-muted">CARGANDO TU CUENTA DE EAGLES LEGENDS...</p>
+          <p class="el-muted">
+            CARGANDO TU CUENTA DE EAGLES LEGENDS...
+          </p>
         </div>
       `;
     }
@@ -632,32 +857,51 @@
         normalizeOrders(ordersResult)
       );
 
-      if (message) portalStatus(message, 'success');
+      if (message) {
+        portalStatus(message, 'success');
+      }
 
     } catch (error) {
       if (!sessionToken) {
-        showSignedOut(error.message || 'Tu sesión expiró. Inicia sesión nuevamente.');
-      } else {
-        const root = portalRoot();
+        showSignedOut(
+          'Tu sesión expiró. Vuelve a iniciar sesión.'
+        );
 
-        if (root) {
-          root.innerHTML = `
+      } else if (isApiUnavailable(error)) {
+        showStoreUnavailable();
+
+      } else {
+        const currentRoot = portalRoot();
+
+        if (currentRoot) {
+          currentRoot.innerHTML = `
             <div class="el-panel">
               <strong>NO SE PUDO CARGAR EL PORTAL</strong>
-              <p class="el-muted">${esc(error.message)}</p>
+
+              <p class="el-muted">
+                ${esc(error.message)}
+              </p>
+
               <button id="el-retry" class="el-btn" type="button">
                 REINTENTAR
               </button>
             </div>
           `;
 
-          $('#el-retry')?.addEventListener('click', () => loadPortalData());
+          $('#el-retry')?.addEventListener('click', () => {
+            loadPortalData();
+          });
         }
       }
+
     } finally {
       portalLoading = false;
     }
   }
+
+  // ======================================================
+  // COMPRAR ARTÍCULO
+  // ======================================================
 
   async function purchaseItem(form) {
     if (!sessionToken) {
@@ -668,10 +912,15 @@
     const itemId = form.dataset.itemId;
     const input = $('.el-pass-input', form);
     const button = $('button[type="submit"]', form);
+
     const gamePassUrl = input?.value.trim() || '';
 
     if (!/^https:\/\/(www\.)?roblox\.com\/game-pass\/\d+(\/|$)/i.test(gamePassUrl)) {
-      portalStatus('Introduce un enlace válido de Game Pass de Roblox.', 'error');
+      portalStatus(
+        'Introduce un enlace válido de Game Pass de Roblox.',
+        'error'
+      );
+
       input?.focus();
       return;
     }
@@ -683,7 +932,9 @@
 
     // Se conserva el mismo identificador si se reintenta el envío.
     // Esto ayuda a evitar pedidos duplicados si se pierde una respuesta.
+
     const requestId = form.dataset.requestId || createRequestId();
+
     form.dataset.requestId = requestId;
 
     if (button) {
@@ -709,7 +960,15 @@
       await loadPortalData(message);
 
     } catch (error) {
-      portalStatus(error.message || 'No se pudo registrar el pedido.', 'error');
+      if (isApiUnavailable(error)) {
+        showStoreUnavailable();
+        return;
+      }
+
+      portalStatus(
+        error.message || 'No se pudo registrar el pedido.',
+        'error'
+      );
 
       if (button) {
         button.disabled = false;
@@ -717,6 +976,10 @@
       }
     }
   }
+
+  // ======================================================
+  // CERRAR SESIÓN
+  // ======================================================
 
   async function logoutPortal() {
     const token = sessionToken;
@@ -730,13 +993,21 @@
           method: 'POST',
           token
         });
+
       } catch (error) {
-        console.warn('No se pudo confirmar el cierre de sesión:', error.message);
+        console.warn(
+          'No se pudo confirmar el cierre de sesión:',
+          error.message
+        );
       }
     }
 
     showSignedOut('Has cerrado sesión.');
   }
+
+  // ======================================================
+  // INTERCAMBIAR TICKET DE DISCORD
+  // ======================================================
 
   async function exchangePortalTicket(ticket) {
     if (!ticket || !API_CONFIGURED) return;
@@ -752,27 +1023,52 @@
       }
 
       sessionToken = result.token;
-      portalMessage = '¡Discord vinculado correctamente!';
 
-      await loadPortalData(portalMessage);
-      portalMessage = '';
+      await loadPortalData(
+        '¡Discord vinculado correctamente!'
+      );
 
     } catch (error) {
       sessionToken = null;
-      showSignedOut(error.message || 'No se pudo vincular tu cuenta.');
+
+      if (isApiUnavailable(error)) {
+        showStoreUnavailable();
+      } else {
+        showSignedOut(
+          error.message || 'No se pudo vincular tu cuenta.'
+        );
+      }
     }
   }
+
+  // ======================================================
+  // INICIALIZAR PORTAL
+  // ======================================================
 
   function initPortal() {
     portalStyles();
 
     if (!portalRoot()) return;
 
+    if (!API_CONFIGURED) {
+      showSignedOut();
+      return;
+    }
+
     if (sessionToken) {
       loadPortalData();
-    } else {
-      showSignedOut();
+      return;
     }
+
+    showSignedOut();
+
+    // Comprueba automáticamente si la tienda está disponible.
+    // Si la API devuelve un error 502 o no responde,
+    // se muestra la pantalla de mantenimiento.
+
+    checkApiHealth().catch(() => {
+      showStoreUnavailable();
+    });
   }
 
   // ======================================================
@@ -804,8 +1100,11 @@
           ? `<img class="pimg" src="${esc(p.photo)}" alt="" loading="lazy">`
           : ''
         }
+
         <span class="num">0${i + 1}</span>
+
         <div class="pname">${esc(p.nick)}</div>
+
         <div class="roles">
           ${(p.roles || []).map(r => `<i>${esc(r)}</i>`).join('')}
         </div>
@@ -815,9 +1114,15 @@
       <a class="player open"
          href="${ok(C.discordInvite) ? esc(C.discordInvite) : '#unete'}"
          target="_blank" rel="noopener noreferrer">
+
         <span class="num">0${i + 1}</span>
+
         <div class="pname">VACANTE</div>
-        <div class="roles"><i>Cupo abierto</i></div>
+
+        <div class="roles">
+          <i>Cupo abierto</i>
+        </div>
+
         <em>POSTÚLATE ↗</em>
       </a>
     `
@@ -896,6 +1201,7 @@
               </small>
 
               <h4>${esc(e.title)}</h4>
+
               <p>${esc(e.detail || '')}</p>
 
               ${e.info ? more : ''}
@@ -913,12 +1219,16 @@
 
     nx.innerHTML = `
       <small>PRÓXIMA ACTIVIDAD</small>
+
       <h3>${esc(ev[0].title)}</h3>
+
       <p>
         ${d} ${esc(m)}${ev[0].time ? ' · ' + esc(ev[0].time) : ''}
         · ${esc(ev[0].type || '')}
       </p>
+
       <div class="cd" id="cd"></div>
+
       ${ev[0].info ? more : ''}
       ${ev[0].signup ? btn : ''}
     `;
@@ -1038,6 +1348,7 @@
                 ? `<img src="${esc(o.image)}" alt="" loading="lazy" onerror="this.remove()">`
                 : ''
               }
+
               <figcaption>${esc(o.name)}</figcaption>
             </figure>
           `;
@@ -1109,7 +1420,9 @@
         <div id="el-portal">
           <div id="el-portal-root">
             <div class="el-panel">
-              <p class="el-muted">Preparando el portal de Eagles Legends...</p>
+              <p class="el-muted">
+                Preparando el portal de Eagles Legends...
+              </p>
             </div>
           </div>
         </div>
@@ -1144,6 +1457,7 @@
     const p = pages[pageKey];
 
     $('#agendainfo').hidden = !p;
+
     document.body.classList.toggle('solo', !!p);
 
     if (p) {
