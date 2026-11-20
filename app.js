@@ -31,8 +31,16 @@
   let sessionToken = null;
   let portalLoading = false;
 
+  // Control de mantenimiento y recuperación automática.
+  let maintenanceTimer = null;
+  let recoveryCheckRunning = false;
+
   function apiUrl(path) {
     return API_BASE + (path.startsWith('/') ? path : `/${path}`);
+  }
+
+  function isBotsPage() {
+    return (location.hash || '').split('?')[0] === '#bots';
   }
 
   function unavailableError() {
@@ -45,6 +53,23 @@
     return error?.code === 'API_UNAVAILABLE';
   }
 
+  function stopMaintenanceMonitor() {
+    if (maintenanceTimer !== null) {
+      clearInterval(maintenanceTimer);
+      maintenanceTimer = null;
+    }
+  }
+
+  function startMaintenanceMonitor() {
+    if (maintenanceTimer !== null) return;
+
+    maintenanceTimer = setInterval(() => {
+      if (isBotsPage() && document.visibilityState === 'visible') {
+        recoverStoreIfAvailable();
+      }
+    }, 10000);
+  }
+
   // ======================================================
   // COMPROBAR DISPONIBILIDAD DE LA API
   // ======================================================
@@ -54,36 +79,102 @@
       throw new Error('La API no está configurada.');
     }
 
-    let response;
+    const controller = new AbortController();
+
+    const timeout = setTimeout(() => {
+      controller.abort();
+    }, 8000);
 
     try {
-      response = await fetch(apiUrl('/health'), {
+      const response = await fetch(apiUrl('/health'), {
         method: 'GET',
         headers: {
           Accept: 'application/json'
         },
         cache: 'no-store',
-        credentials: 'omit'
+        credentials: 'omit',
+        signal: controller.signal
       });
-    } catch {
+
+      if (!response.ok) {
+        throw unavailableError();
+      }
+
+      const data = await response.json().catch(() => null);
+
+      if (
+        !data ||
+        data.success !== true ||
+        data.status !== 'online'
+      ) {
+        throw unavailableError();
+      }
+
+      return true;
+
+    } catch (error) {
+      if (error.code === 'API_UNAVAILABLE') throw error;
       throw unavailableError();
+
+    } finally {
+      clearTimeout(timeout);
     }
+  }
 
-    if (!response.ok) {
-      throw unavailableError();
-    }
+  // ======================================================
+  // RECUPERACIÓN AUTOMÁTICA
+  // ======================================================
 
-    const data = await response.json().catch(() => null);
-
+  async function recoverStoreIfAvailable(button = null) {
     if (
-      !data ||
-      data.success !== true ||
-      data.status !== 'online'
+      recoveryCheckRunning ||
+      !isBotsPage() ||
+      document.visibilityState !== 'visible'
     ) {
-      throw unavailableError();
+      return;
     }
 
-    return true;
+    recoveryCheckRunning = true;
+
+    if (button && button.isConnected) {
+      button.disabled = true;
+      button.textContent = 'COMPROBANDO...';
+    }
+
+    try {
+      // Primero se comprueba que Cloudflare y la API respondan.
+      await checkApiHealth();
+
+      if (sessionToken) {
+        // Si hay una sesión, recuperar el panel completo.
+        const loaded = await loadPortalData(
+          '¡La conexión se ha restablecido!'
+        );
+
+        // No detener el monitor si la carga del panel volvió a fallar.
+        if (loaded || !sessionToken) {
+          stopMaintenanceMonitor();
+        }
+
+      } else {
+        // Si no hay sesión, volver a mostrar el inicio de sesión.
+        stopMaintenanceMonitor();
+
+        showSignedOut(
+          '¡La tienda está disponible nuevamente! Ya puedes iniciar sesión.'
+        );
+      }
+
+    } catch {
+      // Si sigue desconectada, mantener la pantalla de mantenimiento.
+      if (button && button.isConnected) {
+        button.disabled = false;
+        button.textContent = 'VOLVER A INTENTAR';
+      }
+
+    } finally {
+      recoveryCheckRunning = false;
+    }
   }
 
   // ======================================================
@@ -113,13 +204,14 @@
         cache: 'no-store',
         credentials: 'omit'
       });
+
     } catch {
       throw unavailableError();
     }
 
     const data = await response.json().catch(() => ({}));
 
-    // Errores de servidor: API caída, Cloudflare 502, 503, 504, etc.
+    // Errores 5xx de la API o de Cloudflare.
     if (response.status >= 500) {
       throw unavailableError();
     }
@@ -495,27 +587,12 @@
       </div>
     `;
 
-    $('#el-retry')?.addEventListener('click', async () => {
-      const button = $('#el-retry');
-
-      if (!button || button.disabled) return;
-
-      button.disabled = true;
-      button.textContent = 'COMPROBANDO...';
-
-      try {
-        await checkApiHealth();
-
-        if (sessionToken) {
-          await loadPortalData();
-        } else {
-          showSignedOut('El servidor está disponible. Ya puedes iniciar sesión.');
-        }
-
-      } catch {
-        showStoreUnavailable();
-      }
+    $('#el-retry')?.addEventListener('click', event => {
+      recoverStoreIfAvailable(event.currentTarget);
     });
+
+    // Comprobar cada 10 segundos mientras esté en mantenimiento.
+    startMaintenanceMonitor();
   }
 
   // ======================================================
@@ -556,8 +633,6 @@
       <div id="el-portal-status" class="el-status" hidden></div>
     `;
 
-    // Antes de enviar al jugador a Discord,
-    // comprobar que la API se encuentre disponible.
     const loginButton = $('#el-login', root);
 
     loginButton?.addEventListener('click', async event => {
@@ -567,9 +642,12 @@
 
       loginButton.dataset.checking = '1';
       loginButton.textContent = 'COMPROBANDO SERVIDOR...';
+      loginButton.setAttribute('aria-busy', 'true');
 
       try {
         await checkApiHealth();
+
+        stopMaintenanceMonitor();
 
         window.location.assign(apiUrl('/auth/discord'));
 
@@ -813,7 +891,7 @@
   // ======================================================
 
   async function loadPortalData(message = '') {
-    if (!sessionToken || portalLoading) return;
+    if (!sessionToken || portalLoading) return false;
 
     portalLoading = true;
 
@@ -838,7 +916,7 @@
         apiRequest('/api/orders', { token })
       ]);
 
-      if (sessionToken !== token) return;
+      if (sessionToken !== token) return false;
 
       const profile =
         meResult.user ||
@@ -860,6 +938,8 @@
       if (message) {
         portalStatus(message, 'success');
       }
+
+      return true;
 
     } catch (error) {
       if (!sessionToken) {
@@ -893,6 +973,8 @@
           });
         }
       }
+
+      return false;
 
     } finally {
       portalLoading = false;
@@ -1024,9 +1106,13 @@
 
       sessionToken = result.token;
 
-      await loadPortalData(
+      const loaded = await loadPortalData(
         '¡Discord vinculado correctamente!'
       );
+
+      if (loaded) {
+        stopMaintenanceMonitor();
+      }
 
     } catch (error) {
       sessionToken = null;
@@ -1062,14 +1148,43 @@
 
     showSignedOut();
 
-    // Comprueba automáticamente si la tienda está disponible.
-    // Si la API devuelve un error 502 o no responde,
-    // se muestra la pantalla de mantenimiento.
-
+    // Primera comprobación al abrir la sección.
     checkApiHealth().catch(() => {
       showStoreUnavailable();
     });
   }
+
+  // ======================================================
+  // RECUPERACIÓN AL VOLVER A LA PESTAÑA
+  // ======================================================
+
+  document.addEventListener('visibilitychange', () => {
+    if (
+      document.visibilityState === 'visible' &&
+      isBotsPage() &&
+      maintenanceTimer !== null
+    ) {
+      recoverStoreIfAvailable();
+    }
+  });
+
+  // Recuperación cuando vuelve Internet al dispositivo.
+  window.addEventListener('online', () => {
+    if (isBotsPage() && maintenanceTimer !== null) {
+      recoverStoreIfAvailable();
+    }
+  });
+
+  // Recuperación al volver a una página restaurada por el navegador.
+  window.addEventListener('pageshow', () => {
+    if (
+      isBotsPage() &&
+      document.visibilityState === 'visible' &&
+      maintenanceTimer !== null
+    ) {
+      recoverStoreIfAvailable();
+    }
+  });
 
   // ======================================================
   // DISCORD Y REDES SOCIALES
@@ -1455,6 +1570,11 @@
     const pageKey = hashParts[0] || '';
     const params = new URLSearchParams(hashParts[1] || '');
     const p = pages[pageKey];
+
+    // Detener el comprobador si el jugador sale de BOTS.
+    if (pageKey !== '#bots') {
+      stopMaintenanceMonitor();
+    }
 
     $('#agendainfo').hidden = !p;
 
