@@ -15,7 +15,7 @@ window.EAGLES_CONFIG = {
   // Ejemplo:
   // https://nombre-aleatorio.trycloudflare.com
 
-  apiBaseUrl: "https://discord.com/oauth2/authorize?client_id=1563419765299609640&response_type=code&redirect_uri=https%3A%2F%2Fmovers-ontario-grows-them.trycloudflare.com%2F&scope=guilds+guilds.join+identify",
+  apiBaseUrl: "https://movers-ontario-grows-them.trycloudflare.com",
 
   // ====================================================
   // DISCORD
