@@ -47,8 +47,7 @@ window.EAGLES_CONFIG = {
   roster: [
     {
       nick: "EGL.Tide",
-      roles: ["Granadero", "IGL", "Soporte"],
-      photo: "assets/tide.png"
+      roles: ["Granadero", "IGL", "Soporte"]
     },
     {
       nick: "EGL.MihaWK",
@@ -56,8 +55,7 @@ window.EAGLES_CONFIG = {
     },
     {
       nick: "EGL.Felipe",
-      roles: ["Rusher L1", "Rusher L2"],
-      photo: "assets/felipe.png"
+      roles: ["Rusher L1", "Rusher L2"]
     },
     {
       nick: "EGL.Betex",
